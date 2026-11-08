@@ -9,7 +9,7 @@ resource "aws_db_subnet_group" "main" {
 
 resource "aws_security_group" "rds" {
   name        = "${var.project_name}-rds-sg"
-  description = "Allows MySQL only from the EKS cluster/node security group provisioned in Repo 2"
+  description = "Allows MySQL only from the EKS cluster/node security group provisioned in os-infrastructure"
   vpc_id      = data.aws_eks_cluster.main.vpc_config[0].vpc_id
 
   ingress {
