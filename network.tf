@@ -1,4 +1,4 @@
-# Discovers Repo 2's networking by the EKS cluster's well-known, fixed
+# Discovers os-infrastructure's networking by the EKS cluster's well-known, fixed
 # name — no manual copy-paste of VPC/subnet IDs between repos, and no
 # cross-repo Terraform state coupling.
 data "aws_eks_cluster" "main" {
