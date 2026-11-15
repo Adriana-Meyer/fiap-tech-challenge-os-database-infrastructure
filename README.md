@@ -1,6 +1,6 @@
 # fiap-tech-challenge-os-database-infrastructure
 
-Infraestrutura do banco de dados gerenciado (Amazon RDS) do Tech Challenge Fase 3 — FIAP Pós-Tech, Arquitetura de Software, turma 15SOAT. Um dos 4 repositórios exigidos pela Fase 3 (na Fase 4, é o repositório de banco do OS Service): provisiona, via Terraform, o banco MySQL usado pela [aplicação principal](https://github.com/Adriana-Meyer/fiap-tech-challenge-os-service), substituindo o MySQL que rodava como pod dentro do cluster (Fase 2) por uma instância gerenciada.
+Infraestrutura do banco de dados gerenciado (Amazon RDS) do Tech Challenge — FIAP Pós-Tech, Arquitetura de Software, turma 15SOAT. É o repositório de banco do OS Service: provisiona, via Terraform, o banco MySQL usado pela [aplicação principal](https://github.com/Adriana-Meyer/fiap-tech-challenge-os-service), substituindo o MySQL que rodava como pod dentro do cluster por uma instância gerenciada.
 
 ## Tecnologias
 
@@ -13,14 +13,14 @@ Infraestrutura do banco de dados gerenciado (Amazon RDS) do Tech Challenge Fase 
 
 ## Por que RDS gerenciado (em vez de MySQL em pod)
 
-Nas fases anteriores, o MySQL rodava como um Deployment dentro do próprio cluster Kubernetes (`k8s/02-mysql/` no repositório da App), com um PVC para persistência — funcional para desenvolvimento local, mas com limitações reais para produção: backups, patching de segurança, monitoramento de storage/IOPS e recuperação de falhas ficavam todos por conta da aplicação. Um banco gerenciado resolve isso nativamente:
+Antes, o MySQL rodava como um Deployment dentro do próprio cluster Kubernetes (`k8s/02-mysql/` no repositório da App), com um PVC para persistência — funcional para desenvolvimento local, mas com limitações reais para produção: backups, patching de segurança, monitoramento de storage/IOPS e recuperação de falhas ficavam todos por conta da aplicação. Um banco gerenciado resolve isso nativamente:
 
 | Critério | Justificativa |
 |---|---|
 | **Backups automáticos** | RDS faz snapshot automático diário e permite restore point-in-time, sem esforço operacional adicional. |
 | **Isolamento de rede** | A instância fica em subnets privadas, sem IP público, acessível só a partir do security group do cluster EKS (os-infrastructure) — reduz superfície de ataque. |
-| **Separação de responsabilidade de infraestrutura** | Ciclo de vida do banco (upgrade de versão, storage, manutenção) desacoplado do ciclo de vida do cluster/aplicação — alinhado com a divisão em repositórios pedida pela Fase 3. |
-| **Continuidade com a escolha já feita nas fases anteriores** | O motor continua MySQL 8 — mesma justificativa relacional/ACID/Flyway já documentada no [README da App](https://github.com/Adriana-Meyer/fiap-tech-challenge-os-service#modelagem-do-banco-de-dados); só o *onde* roda o banco muda, não o modelo de dados. |
+| **Separação de responsabilidade de infraestrutura** | Ciclo de vida do banco (upgrade de versão, storage, manutenção) desacoplado do ciclo de vida do cluster/aplicação — alinhado com a divisão em repositórios independentes (aplicação, cluster, banco e gateway). |
+| **Continuidade com a escolha já feita** | O motor continua MySQL 8 — mesma justificativa relacional/ACID/Flyway já documentada no [README da App](https://github.com/Adriana-Meyer/fiap-tech-challenge-os-service#modelagem-do-banco-de-dados); só o *onde* roda o banco muda, não o modelo de dados. |
 
 O modelo de dados (diagrama ER completo e explicação dos relacionamentos) é mantido centralizado no repositório da App: [`docs/`](https://github.com/Adriana-Meyer/fiap-tech-challenge-os-service/tree/main/docs).
 
@@ -80,7 +80,7 @@ terraform apply
 >
 > No `apply` via CI, o endpoint/usuário/senha do banco são enviados **automaticamente** como Secrets do os-service (`RDS_DATASOURCE_URL`/`RDS_USERNAME`/`RDS_PASSWORD`, via `gh secret set` — nunca aparecem em log nenhum) — não precisa mais copiar `terraform output` manualmente.
 
-Para desativar tudo ao final da sessão de estudo (economiza orçamento do Lab):
+Para desativar tudo ao final da sessão do Lab (economiza orçamento do Lab):
 
 ```bash
 terraform destroy
