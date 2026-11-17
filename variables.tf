@@ -9,13 +9,13 @@ variable "project_name" {
 }
 
 variable "eks_cluster_name" {
-  description = "Fixed name of the EKS cluster provisioned by Repo 2 — used to discover its VPC, private subnets and cluster security group without manual copy-paste between repos."
+  description = "Fixed name of the EKS cluster provisioned by os-infrastructure — used to discover its VPC, private subnets and cluster security group without manual copy-paste between repos."
   type        = string
   default     = "tech-challenge-eks"
 }
 
 variable "db_name" {
-  description = "Same database name already used by the app (application-docker.yml / k8s configmap) to minimize changes when Repo 4 points to this RDS instance."
+  description = "Same database name already used by the app (application-docker.yml / k8s configmap) to minimize changes when os-service points to this RDS instance."
   type        = string
   default     = "workshop_db"
 }
